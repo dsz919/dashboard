@@ -8,17 +8,17 @@ class SetupController < ApplicationController
   DASHBOARD_JSON_FILE = 'public/dashboard.json'
   DASHBOARD_TEMPLATE = 'public/template.html'
 
-  def self.parse_dashboard_definition(structure)
+  def self.parse_dashboard_definition(structure, widget_list)
     structure.each do | entry |
       if(entry.is_a?(Hash))
-        handle_git_download(entry)
+        handle_git_download(entry, widget_list)
       else
 
         dashboard_template = File.open(DASHBOARD_TEMPLATE, 'a+')
         dashboard_template.puts ' <div class="row">'
         dashboard_template.close
 
-        SetupController::parse_dashboard_definition(entry)
+        SetupController::parse_dashboard_definition(entry, widget_list)
 
         dashboard_template = File.open(DASHBOARD_TEMPLATE, 'a+')
         dashboard_template.puts ' </div>'
@@ -29,7 +29,7 @@ class SetupController < ApplicationController
 
   end
 
-  def self.handle_git_download(entry)
+  def self.handle_git_download(entry, widget_list)
     puts "\n handle git: " + entry.inspect
     git_url = entry["source"]
     css_span = entry["span"]
@@ -41,26 +41,27 @@ class SetupController < ApplicationController
       Git.clone(git_url, 'public/' + widget_type)
     end
 
-    widget_timestamp = (Time.new.to_f * 1000000).to_i.to_s
+    widget_id = (Time.new.to_f * 1000000).to_i.to_s
 
-    widget_config_file = 'public/config/widget_' + widget_timestamp
+    widget_config_file = 'public/config/widget_' + widget_id
     puts "wcf: " + widget_config_file
     widget_config = File.open(widget_config_file, 'w+')
 
     dashboard_template = File.open(DASHBOARD_TEMPLATE, 'a+')
-    dashboard_template.puts '   <div class=span' + css_span.to_s + '>my widget: ' + widget_timestamp.to_s
-
+    dashboard_template.puts '   <div id="' + widget_id.to_s + '" class="span' + css_span.to_s + ' widget">my widget: ' + widget_id.to_s
     dashboard_template.puts '      <script src="/' + widget_type + '/widget.js" type="text/javascript" ></script>'
-
     dashboard_template.puts '   </div>'
-
     dashboard_template.close
+
+    widget_list << widget_id
 
   end
 
   def start
     file = File.open(DASHBOARD_JSON_FILE)
     puts "got a file! " + file.inspect
+
+    widget_list = []
 
     dashboard_json = file.read
 
@@ -76,18 +77,26 @@ class SetupController < ApplicationController
     dashboard_template.puts '</script>'
 
     dashboard_template.puts '<link href="/assets/bootstrap.css" rel="stylesheet" type="text/css" />'
-    dashboard_template.puts '<div id="testing"></div>'
+    dashboard_template.puts '<link href="/assets/dashboard.css" rel="stylesheet" type="text/css" />'
     dashboard_template.puts '<div class="container">'
     dashboard_template.close
 
     puts "def: " + dashboard_definition.inspect
-    SetupController::parse_dashboard_definition(dashboard_definition)
+    SetupController::parse_dashboard_definition(dashboard_definition, widget_list)
 
     dashboard_template = File.open(DASHBOARD_TEMPLATE, 'a+')
     dashboard_template.puts '</div>'
+    dashboard_template.puts '<script type="text/javascript">'
+    dashboard_template.puts '    var widget_ids = ' + widget_list.inspect
+    dashboard_template.puts '    for(var i = 0; i< widget_ids.length; i++){'
+    dashboard_template.puts '       widgets[i].init(widget_ids[i]);'
+    dashboard_template.puts '       console.log("init!!!");'
+    dashboard_template.puts '    };'
+    dashboard_template.puts '</script>'
     dashboard_template.close
 
     #redirect :controller => view, :action => dashboard
+    puts "\n\n WIDGET LIST: " + widget_list.inspect
   end
 
 end
