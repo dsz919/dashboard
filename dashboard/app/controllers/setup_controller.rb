@@ -101,4 +101,26 @@ class SetupController < ApplicationController
     puts "\n\n WIDGET LIST: " + widget_list.inspect
   end
 
+  def save_config
+      puts "\n\n save config! " + params.inspect
+      widget_id = params[:widget_id]
+      puts "\n\n got this widget id: " + widget_id.to_s
+      config_file = 'public/config/widget_' + widget_id
+      if(File.exists?(config_file))
+        config_file = File.open(config_file, "w")
+        config_file.puts params.inspect
+      end
+      redirect_to :controller => "view", :action => "dashboard"
+  end
+
 end
+
+
+
+
+
+
+
+
+
+
