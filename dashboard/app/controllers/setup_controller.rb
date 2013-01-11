@@ -78,6 +78,7 @@ class SetupController < ApplicationController
 
     dashboard_template.puts '<link href="/assets/bootstrap.css" rel="stylesheet" type="text/css" />'
     dashboard_template.puts '<link href="/assets/dashboard.css" rel="stylesheet" type="text/css" />'
+    dashboard_template.puts '<script src="/assets/jquery.js" type="text/javascript" ></script>'
     dashboard_template.puts '<div class="container">'
     dashboard_template.puts '<h1>Dashboard</h1>'
     dashboard_template.close
