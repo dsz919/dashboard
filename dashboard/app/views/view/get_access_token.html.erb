@@ -1,0 +1,11 @@
+
+
+<p>
+  access_token: <%= @access_token %>
+</p>
+
+<script type="text/javascript">
+    $.cookie("access_token", "<%= @access_token %>");
+</script>
+
+<%= link_to 'back to dashboard', {:controller => 'view', :action => 'dashboard'} %>

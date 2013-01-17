@@ -1,0 +1,9 @@
+
+<h1> successfully authorised!</h1>
+
+<p>
+  code: <%= @code %>
+</p>
+
+<%= link_to 'get access token', {:controller => 'view', :action => 'get_access_token', :code => @code } %>
+

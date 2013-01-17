@@ -5,8 +5,12 @@ Dashboard::Application.routes.draw do
   # Sample of regular route:
   #   match 'products/:id' => 'catalog#view'
   # Keep in mind you can assign values other than :controller and :action
-  match 'view/dashboard' => 'view#dashboard'
   match 'setup/save_config' => 'setup#save_config'
+  match 'view/dashboard' => 'view#dashboard'
+  match 'view/get_oauth_github_data' => 'view#get_oauth_github_data'
+  match 'view/authorise_with_github' => 'view#authorise_with_github'
+  match 'view/authorize' => 'view#authorize'
+  match 'view/get_access_token' => 'view#get_access_token'
 
   # Sample of named route:
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
@@ -57,4 +61,5 @@ Dashboard::Application.routes.draw do
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
   #match ':controller(/:action(/:id))(.:format)'
+
 end
